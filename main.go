@@ -161,7 +161,8 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/", api.IndexHandler).Methods("GET")
 	router.HandleFunc("/upload", api.UploadHandler).Methods("POST")
-	router.PathPrefix("/download/").Handler(http.StripPrefix("/download/", http.FileServer(http.Dir(httpConfig.FileServerDirectory)))).Methods("GET")
+	fileServer := api.NoDirListing(http.FileServer(http.Dir(httpConfig.FileServerDirectory)))
+	router.PathPrefix("/download/").Handler(http.StripPrefix("/download/", fileServer)).Methods("GET")
 	router.Use(api.ValidateMiddleware)
 
 	address := httpConfig.Address
